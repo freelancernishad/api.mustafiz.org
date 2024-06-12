@@ -77,11 +77,11 @@ public function checkTokenExpiration(Request $request)
     // Loop through each role to fetch permissions
     // foreach ($roles as $role) {
         // Merge permissions associated with the current role into the permissions array
-        $permissions = array_merge($permissions, $roles->permissions->toArray());
+        // $permissions = array_merge($permissions, $roles->permissions->toArray());
     // }
 
     // Remove duplicates and re-index the array
-    $permissions = array_values(array_unique($permissions, SORT_REGULAR));
+    // $permissions = array_values(array_unique($permissions, SORT_REGULAR));
 
     // Now $permissions contains all unique permissions associated with the user
     // You can use $permissions as needed
