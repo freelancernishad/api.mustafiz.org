@@ -294,6 +294,10 @@ Route::group(['middleware' => ['auth:admin']], function () {
 
         Route::get('all/users/list', [UserController::class, 'allUserList']);
 
+        Route::get('admin/get/user/{id}', [UserController::class, 'getUser']);
+        Route::post('admin/users/status/update', [UserController::class, 'updateUserStatus']);
+        Route::delete('/admin/users/delete/{id}', [UserController::class, 'DeleteUser']);
+
 
 
 

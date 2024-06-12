@@ -92,5 +92,30 @@ class UserController extends Controller
      }
 
 
+     function getUser(Request $request, $id){
+
+        $user = User::find($id);
+        return response()->json($user);
+     }
+     function updateUserStatus(Request $request) {
+
+        $id = $request->id;
+        $status = $request->status;
+        $user = User::find($id);
+        if($user){
+            $user->update(['status'=>$status]);
+        }else{
+            return response()->json('User Not Found');
+        }
+        return response()->json($user);
+     }
+
+     function DeleteUser(Request $request,$id) {
+        $user = User::find($id);
+        $user->delete();
+
+        return response()->json(['message' => 'User deleted successfully']);
+     }
+
 
 }
