@@ -290,7 +290,14 @@ Route::group(['middleware' => ['auth:admin']], function () {
     Route::post('admin/logout', [AdminAuthController::class, 'logout']);
     Route::get('/admin-access', function (Request $request) {
         return 'admin access';
-    });
+        });
+
+        Route::get('all/users/list', [UserController::class, 'allUserList']);
+
+
+
+
+
 });
 
 

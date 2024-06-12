@@ -73,12 +73,24 @@ class UserController extends Controller
      }
 
      // Show user details
-     
 
 
 
-   
 
-     
+
+     public function allUserList(Request $request)
+     {
+         $category = $request->category;
+         if ($category) {
+             $users = User::where('category', $category)
+                 ->orderBy('id', 'desc')
+                 ->get();
+         } else {
+             $users = User::orderBy('id', 'desc')->get();
+         }
+         return response()->json($users);
+     }
+
+
 
 }
