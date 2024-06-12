@@ -82,7 +82,12 @@ class UserController extends Controller
      {
          $category = $request->category;
          if ($category) {
-             $users = User::where('category', $category)
+            $status ='pending';
+             if($request->status){
+                 $status = $request->status;
+             }
+
+             $users = User::where(['category'=> $category,'status'=>$status])
                  ->orderBy('id', 'desc')
                  ->get();
          } else {
