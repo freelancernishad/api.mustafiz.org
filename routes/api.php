@@ -29,6 +29,7 @@ use App\Http\Controllers\api\OrganizationController;
 use App\Http\Controllers\Auth\admins\AdminAuthController;
 use App\Http\Controllers\Auth\students\StudentAuthController;
 use App\Http\Controllers\Auth\orgs\OrganizationAuthController;
+use App\Http\Controllers\EmailAuthController;
 
 
 
@@ -109,6 +110,10 @@ foreach ($routes as $route) {
 
 
 
+Route::post('send-otp', [EmailAuthController::class, 'sendOtp']);
+Route::post('verify-otp', [EmailAuthController::class, 'verifyOtp']);
+Route::post('verify-email', [EmailAuthController::class, 'verifyEmail'])->name('verification.verify');
+Route::post('send-verification-link', [EmailAuthController::class, 'sendVerificationLink']);
 
 
 
