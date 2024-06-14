@@ -76,7 +76,7 @@ class RoleUserController extends Controller
             'current_address' => 'nullable|string|max:255',
             'current_institution' => 'nullable|string|max:255',
             'current_living' => 'nullable|string|max:255',
-            'dob' => 'nullable|date',
+            'dob' => 'nullable',
             'education_level' => 'nullable|string|max:255',
             'father_name' => 'nullable|string|max:255',
             'gender' => 'nullable|string|max:255',
@@ -131,7 +131,10 @@ class RoleUserController extends Controller
             $request->merge(['password' => Hash::make($request->password)]);
         }
 
-        $user->update($request->except('password'));
+        $requestdata = $request->except('password');
+        $requestdata['dob']=date('Y-m-d', strtotime($request->dob. ' + 1 days'));
+
+        $user->update($requestdata);
         if ($request->has('password')) {
             $user->password = Hash::make($request->password);
             $user->save();
