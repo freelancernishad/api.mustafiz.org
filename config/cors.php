@@ -1,9 +1,5 @@
 <?php
 
-
-
-
-
 return [
 
     /*
@@ -23,7 +19,12 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000'),'http://localhost:5173','https://blood-suyel.netlify.app','http://localhost:5173','https://help.mustafiz.org','https://help.mustafiz.org/','https:www.//help.mustafiz.org','https:www.//help.mustafiz.org/','https://help.mustafiz.org/login'],
+    'allowed_origins' => [
+        env('FRONTEND_URL', 'http://localhost:3000'),
+        'http://localhost:5173',
+        'https://blood-suyel.netlify.app',
+        'https://help.mustafiz.org',
+    ],
 
     'allowed_origins_patterns' => [],
 
