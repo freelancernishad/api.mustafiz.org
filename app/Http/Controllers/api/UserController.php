@@ -80,21 +80,33 @@ class UserController extends Controller
 
      public function allUserList(Request $request)
      {
-         $category = $request->category;
-         if ($category) {
-            $status ='pending';
-             if($request->status){
-                 $status = $request->status;
-             }
+         $query = User::query();
 
-             $users = User::where(['category'=> $category,'status'=>$status])
-                 ->orderBy('id', 'desc')
-                 ->get();
-         } else {
-             $users = User::orderBy('id', 'desc')->get();
+         // Filter by category and status if provided
+         if ($request->has('category')) {
+             $status = $request->input('status', 'pending');
+             $query->where([
+                 'category' => $request->category,
+                 'status' => $status
+             ]);
          }
+
+         // Search by name, mobile, or current_address if provided
+         if ($request->has('searchText')) {
+             $searchText = $request->searchText;
+             $query->where(function ($q) use ($searchText) {
+                 $q->where('name', 'LIKE', "%{$searchText}%")
+                   ->orWhere('mobile', 'LIKE', "%{$searchText}%")
+                   ->orWhere('current_address', 'LIKE', "%{$searchText}%");
+             });
+         }
+
+         // Order by id and get the results
+         $users = $query->orderBy('id', 'desc')->get();
+
          return response()->json($users);
      }
+
 
 
      function getUser(Request $request, $id){
