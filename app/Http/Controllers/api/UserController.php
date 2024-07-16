@@ -84,9 +84,15 @@ class UserController extends Controller
 
          // Filter by category and status if provided
          if ($request->has('category')) {
-             $status = $request->input('status', 'pending');
              $query->where([
                  'category' => $request->category,
+                 'status' => $status
+             ]);
+         }
+         // Filter by category and status if provided
+         if ($request->has('status')) {
+             $status = $request->input('status', 'pending');
+             $query->where([
                  'status' => $status
              ]);
          }
