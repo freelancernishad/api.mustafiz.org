@@ -178,6 +178,7 @@ public function checkToken(Request $request)
              $token = JWTAuth::fromUser($user);
 
              $user =  [
+                 "id"=> $user->id,
                  "email"=> $user->email,
                  "name"=> $user->name,
                  "category"=> $user->category,

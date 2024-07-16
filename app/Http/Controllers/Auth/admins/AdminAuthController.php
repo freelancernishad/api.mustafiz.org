@@ -19,6 +19,8 @@ class AdminAuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
+            'location' => 'required|string|max:255',
+            'role' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:admins',
             'password' => 'required|string|min:8',
         ]);
@@ -47,7 +49,17 @@ class AdminAuthController extends Controller
             $admin = Auth::guard('admin')->user();
             $token = JWTAuth::fromUser($admin);
             // $token = $admin->createToken('access_token')->accessToken;
-            return response()->json(['token' => $token]);
+
+
+            $user =  [
+                "id"=> $admin->id,
+                "email"=> $admin->email,
+                "name"=> $admin->name,
+                "role"=> $admin->role,
+            ];
+
+
+            return response()->json(['token' => $token,'user'=>$user]);
         }
 
         return response()->json(['error' => 'Unauthorized'], 401);
