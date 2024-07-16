@@ -96,7 +96,7 @@ class UserController extends Controller
              $searchText = $request->searchText;
              $query->where(function ($q) use ($searchText) {
                  $q->where('name', 'LIKE', "%{$searchText}%")
-                   ->orWhere('mobile', 'LIKE', "%{$searchText}%")
+                   ->orWhere('phone', 'LIKE', "%{$searchText}%")
                    ->orWhere('current_address', 'LIKE', "%{$searchText}%");
              });
          }
