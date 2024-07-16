@@ -175,7 +175,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     });
 
 
-    Route::post('user/update/{id}', [RoleUserController::class, 'update']);
+
 
     Route::post('users/change-password', [UserController::class, 'changePassword'])->name('users.change_password')->middleware('checkPermission:users.change_password');
     Route::get('/user-access', function (Request $request) {
@@ -303,6 +303,7 @@ Route::group(['middleware' => ['auth:admin']], function () {
         Route::post('admin/users/status/update', [UserController::class, 'updateUserStatus']);
         Route::delete('/admin/users/delete/{id}', [UserController::class, 'DeleteUser']);
 
+        Route::post('user/update/{id}', [RoleUserController::class, 'update']);
 
 
 
