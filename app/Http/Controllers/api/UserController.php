@@ -77,28 +77,34 @@ class UserController extends Controller
 
 
 
-
      public function allUserList(Request $request)
      {
          $query = User::query();
 
-         // Filter by category and status if provided
+         // Filter by category if provided
          if ($request->has('category')) {
-             $query->where([
-                 'category' => $request->category,
-             ]);
+             $query->where('category', $request->input('category'));
          }
-         // Filter by category and status if provided
+
+         // Filter by status if provided
          if ($request->has('status')) {
              $status = $request->input('status', 'pending');
-             $query->where([
-                 'status' => $status
-             ]);
+             $query->where('status', $status);
+         }
+
+         // Filter by religion if provided
+         if ($request->has('religion')) {
+             $query->where('religion', $request->input('religion'));
+         }
+
+         // Filter by education level if provided
+         if ($request->has('education')) {
+             $query->where('education_level', $request->input('education'));
          }
 
          // Search by name, mobile, or current_address if provided
          if ($request->has('searchText')) {
-             $searchText = $request->searchText;
+             $searchText = $request->input('searchText');
              $query->where(function ($q) use ($searchText) {
                  $q->where('name', 'LIKE', "%{$searchText}%")
                    ->orWhere('phone', 'LIKE', "%{$searchText}%")
@@ -111,6 +117,7 @@ class UserController extends Controller
 
          return response()->json($users);
      }
+
 
 
 
