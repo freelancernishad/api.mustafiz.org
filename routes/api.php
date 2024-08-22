@@ -18,7 +18,9 @@ use App\Http\Controllers\WeatherController;
 
 use App\Http\Controllers\api\UserController;
 
+use App\Http\Controllers\DecisionController;
 use App\Http\Controllers\RoleUserController;
+use App\Http\Controllers\EmailAuthController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SocialLinkController;
 use App\Http\Controllers\api\StudentController;
@@ -29,7 +31,6 @@ use App\Http\Controllers\api\OrganizationController;
 use App\Http\Controllers\Auth\admins\AdminAuthController;
 use App\Http\Controllers\Auth\students\StudentAuthController;
 use App\Http\Controllers\Auth\orgs\OrganizationAuthController;
-use App\Http\Controllers\EmailAuthController;
 
 
 
@@ -304,6 +305,21 @@ Route::group(['middleware' => ['auth:admin']], function () {
         Route::delete('/admin/users/delete/{id}', [UserController::class, 'DeleteUser']);
 
         Route::post('user/update/{id}', [RoleUserController::class, 'update']);
+
+
+
+        Route::get('decisions', [DecisionController::class, 'index']);
+        Route::post('decisions', [DecisionController::class, 'store']);
+        Route::get('decisions/{id}', [DecisionController::class, 'show']);
+        Route::post('decisions/{id}', [DecisionController::class, 'update']);
+        Route::delete('decisions/{id}', [DecisionController::class, 'destroy']);
+
+        Route::get('decisions/status/pending', [DecisionController::class, 'pending']);
+        Route::get('decisions/status/waiting_approval', [DecisionController::class, 'waitingApproval']);
+        Route::get('decisions/status/approved', [DecisionController::class, 'approved']);
+        Route::get('decisions/status/reject', [DecisionController::class, 'reject']);
+        Route::get('decisions/status/{status}', [DecisionController::class, 'byStatus']);
+
 
 
 
