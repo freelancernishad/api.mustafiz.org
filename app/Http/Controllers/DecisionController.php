@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Decision;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class DecisionController extends Controller
 {
@@ -38,18 +39,26 @@ class DecisionController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the request data
-        $request->validate([
+        // Define validation rules
+        $rules = [
             'title' => 'required|string|max:255',
             'why' => 'required|string',
             'how_long' => 'required|string|max:255',
             'how_much' => 'required|numeric',
             'note' => 'nullable|string',
             'status' => 'required|string|in:pending,waiting_approval,approved,reject',
-        ]);
+
+        ];
+
+        // Validate the request data
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         // Create a new decision
-        $decision = new Decision([
+        $decision = Decision::create([
             'user_id' => Auth::id(),
             'title' => $request->title,
             'why' => $request->why,
@@ -57,9 +66,8 @@ class DecisionController extends Controller
             'how_much' => $request->how_much,
             'note' => $request->note,
             'status' => $request->status,
+            'date' => now(), // Automatically set the current date
         ]);
-
-        $decision->save();
 
         return response()->json($decision, 201);
     }
@@ -97,19 +105,38 @@ class DecisionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Validate the request data
-        $request->validate([
+        // Define validation rules
+        $rules = [
             'title' => 'required|string|max:255',
             'why' => 'required|string',
             'how_long' => 'required|string|max:255',
             'how_much' => 'required|numeric',
             'note' => 'nullable|string',
             'status' => 'required|string|in:pending,waiting_approval,approved,reject',
-        ]);
+            'approved_amount' => 'nullable|numeric',
+            'feedback' => 'nullable|string',
+        ];
+
+        // Validate the request data
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         // Fetch the decision and update its details
         $decision = Decision::findOrFail($id);
-        $decision->update($request->all());
+        $decision->update([
+            'title' => $request->title,
+            'why' => $request->why,
+            'how_long' => $request->how_long,
+            'how_much' => $request->how_much,
+            'note' => $request->note,
+            'status' => $request->status,
+            'approved_amount' => $request->approved_amount,
+            'feedback' => $request->feedback,
+            // Do not update the 'date' field
+        ]);
 
         return response()->json($decision);
     }
@@ -195,19 +222,37 @@ class DecisionController extends Controller
         return response()->json($decisions);
     }
 
-
+    /**
+     * Update the status of a specific decision.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function updateStatus(Request $request, $id)
     {
-        // Validate the input
-        $request->validate([
+        // Define validation rules
+        $rules = [
             'status' => 'required|in:pending,waiting_approval,approved,reject',
-        ]);
+            'approved_amount' => 'nullable|numeric',
+            'feedback' => 'nullable|string',
+
+        ];
+
+        // Validate the request data
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         // Find the decision by ID
         $decision = Decision::findOrFail($id);
 
         // Update the status
         $decision->status = $request->input('status');
+        $decision->approved_amount = $request->input('approved_amount');
+        $decision->feedback = $request->input('feedback');
         $decision->save();
 
         // Return a success response
@@ -216,8 +261,4 @@ class DecisionController extends Controller
             'decision' => $decision
         ]);
     }
-
-
-
-
 }

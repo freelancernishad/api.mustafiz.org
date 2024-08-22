@@ -22,6 +22,9 @@ class Decision extends Model
         'how_much',
         'note',
         'status',
+        'approved_amount',
+        'feedback',
+        'date',
     ];
 
     /**
