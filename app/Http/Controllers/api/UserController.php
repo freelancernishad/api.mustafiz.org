@@ -123,7 +123,7 @@ class UserController extends Controller
 
      function getUser(Request $request, $id){
 
-        $user = User::find($id);
+        $user = User::with(['decisions','creator'])->find($id);
         return response()->json($user);
      }
      function updateUserStatus(Request $request) {
