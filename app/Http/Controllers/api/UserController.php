@@ -113,7 +113,7 @@ class UserController extends Controller
          }
 
          // Order by id and get the results
-         $users = $query->with('decisions')->orderBy('id', 'desc')->get();
+         $users = $query->with(['decisions','creator'])->orderBy('id', 'desc')->get();
 
          return response()->json($users);
      }

@@ -157,7 +157,7 @@ Route::get('organizations/single/{id}', [OrganizationController::class, 'show'])
 Route::post('/user/login', [AuthController::class, 'login'])->name('login');
 Route::post('/user/check/login', [AuthController::class, 'checkTokenExpiration'])->name('checklogin');
 Route::post('/user/check-token', [AuthController::class, 'checkToken']);
-Route::post('/user/register', [AuthController::class, 'register']);
+
 
 
 Route::group(['middleware' => ['auth:api']], function () {
@@ -294,6 +294,10 @@ Route::post('/admin/check-token', [AdminAuthController::class, 'checkToken']);
 Route::post('admin/register', [AdminAuthController::class, 'register']);
 
 Route::group(['middleware' => ['auth:admin']], function () {
+
+
+
+    Route::post('/user/register', [AuthController::class, 'register']);
 
     Route::get('admins', [AdminController::class, 'getAll']);
 

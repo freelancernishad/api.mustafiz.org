@@ -77,6 +77,7 @@ class User extends Authenticatable implements JWTSubject
         'status',
         'otp',
         'otp_expires_at',
+        'creator_id',
     ];
 
     /**
@@ -185,6 +186,11 @@ public function permissions()
     public function decisions()
     {
         return $this->hasMany(Decision::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(Admin::class, 'creator_id');
     }
 
 

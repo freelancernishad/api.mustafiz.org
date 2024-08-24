@@ -124,28 +124,13 @@ public function checkToken(Request $request)
     }
 
 
-
 // User registration
 public function register(Request $request)
 {
     // Validate the request
     $validator = Validator::make($request->all(), [
         'name' => 'required|string|max:255',
-        // 'mobile' => [
-        //     'required',
-        //     'string',
-        //     'min:11',
-        //     'max:11',
-        //     Rule::unique('users'),
-        // ],
-        // 'blood_group' => 'required|string|max:5',
         'email' => 'required|string|email|max:255|unique:users',
-        // 'gender' => 'required|string|max:10',
-        // 'division' => 'required|string|max:255',
-        // 'district' => 'required|string|max:255',
-        // 'thana' => 'required|string|max:255',
-        // 'union' => 'required|string|max:255',
-        // 'org' => 'nullable|string|max:255',
         'password' => 'required|string|min:8',
         'category' => 'required|string',
     ]);
@@ -160,24 +145,17 @@ public function register(Request $request)
         return response()->json(['error' => 'Email already exists.'], 409);
     }
 
+    // Get the authenticated admin's ID
+    $creatorId = auth()->id();
+
     // Create the user
     try {
         $user = new User([
             'name' => $request->name,
-            // 'mobile' => $request->mobile,
-            // 'blood_group' => $request->blood_group,
             'email' => $request->email,
-            // 'gender' => $request->gender,
-            // 'guardian_phone' => $request->guardian_phone,
-            // 'last_donate_date' => $request->last_donate_date,
-            // 'whatsapp_number' => $request->whatsapp_number,
-            // 'division' => $request->division,
-            // 'district' => $request->district,
-            // 'thana' => $request->thana,
-            // 'union' => $request->union,
-            // 'org' => $request->org,
             'password' => Hash::make($request->password),
             'category' => $request->category,
+            'creator_id' => $creatorId, // Set the creator_id to the authenticated admin's ID
         ]);
 
         $user->save();
@@ -186,19 +164,20 @@ public function register(Request $request)
         $token = JWTAuth::fromUser($user);
 
         // Prepare the user data for the response
-        $user = [
+        $userData = [
             "id" => $user->id,
             "email" => $user->email,
             "name" => $user->name,
             "category" => $user->category,
         ];
 
-        return response()->json(['token' => $token, 'user' => $user], 201);
+        return response()->json(['token' => $token, 'user' => $userData], 201);
 
     } catch (\Exception $e) {
         return response()->json(['error' => 'User registration failed.'], 500);
     }
 }
+
 
 
 
