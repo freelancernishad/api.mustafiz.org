@@ -25,6 +25,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SocialLinkController;
 use App\Http\Controllers\api\StudentController;
 use App\Http\Controllers\AdvertisementController;
+use App\Http\Controllers\api\AdminController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\Auth\users\AuthController;
 use App\Http\Controllers\api\OrganizationController;
@@ -293,6 +294,9 @@ Route::post('/admin/check-token', [AdminAuthController::class, 'checkToken']);
 Route::post('admin/register', [AdminAuthController::class, 'register']);
 
 Route::group(['middleware' => ['auth:admin']], function () {
+
+    Route::get('admins', [AdminController::class, 'getAll']);
+
     Route::post('admin/logout', [AdminAuthController::class, 'logout']);
     Route::get('/admin-access', function (Request $request) {
         return 'admin access';

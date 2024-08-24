@@ -20,20 +20,17 @@ class AdminController extends Controller
         $role = $request->input('role');
 
         // Query to get admins based on role
-        $adminsQuery = Admin::with('roles');
+        $adminsQuery = Admin::query();
 
         if ($role) {
-            $adminsQuery->whereHas('roles', function ($query) use ($role) {
-                $query->where('name', $role);
-            });
+            $adminsQuery->where('role', $role);
         }
 
         $admins = $adminsQuery->get();
 
-        return response()->json([
-            'admins' => $admins
-        ], 200);
+        return response()->json($admins, 200);
     }
+
 
     /**
      * Get a single Admin by ID.

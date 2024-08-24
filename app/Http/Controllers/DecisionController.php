@@ -17,7 +17,7 @@ class DecisionController extends Controller
     public function index()
     {
         // Fetch all decisions
-        $decisions = Decision::with('user')->get();
+        $decisions = Decision::all();
         return response()->json($decisions);
     }
 
@@ -82,7 +82,7 @@ class DecisionController extends Controller
     public function show($id)
     {
         // Fetch a single decision by its ID
-        $decision = Decision::findOrFail($id);
+        $decision = Decision::with('decisions')->findOrFail($id);
         return response()->json($decision);
     }
 
