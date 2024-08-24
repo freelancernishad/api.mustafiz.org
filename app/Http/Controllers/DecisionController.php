@@ -17,7 +17,7 @@ class DecisionController extends Controller
     public function index()
     {
         // Fetch all decisions
-        $decisions = Decision::all();
+        $decisions = Decision::with('user')->get();
         return response()->json($decisions);
     }
 
@@ -41,6 +41,7 @@ class DecisionController extends Controller
     {
         // Define validation rules
         $rules = [
+            'user_id' => 'required|exists:users,id',
             'title' => 'required|string|max:255',
             'why' => 'required|string',
             'how_long' => 'required|string|max:255',
@@ -59,7 +60,7 @@ class DecisionController extends Controller
 
         // Create a new decision
         $decision = Decision::create([
-            'user_id' => Auth::id(),
+            'user_id' => $request->user_id,
             'title' => $request->title,
             'why' => $request->why,
             'how_long' => $request->how_long,

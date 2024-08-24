@@ -182,5 +182,10 @@ public function permissions()
 
     }
 
+    public function decisions()
+    {
+        return $this->hasMany(Decision::class);
+    }
+
 
 }
