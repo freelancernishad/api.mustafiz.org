@@ -13,6 +13,9 @@ class IpAddressProtectionMiddleware
         'http://test.localhost:8000',
         'http://localhost:5173',
         'https://help.mustafiz.org',
+        'https://www.help.mustafiz.org',
+        'https://mustafiz.org',
+        'https://www.mustafiz.org',
 
 
 
