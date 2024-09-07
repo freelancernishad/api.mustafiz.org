@@ -73,8 +73,9 @@ class DecisionController extends Controller
         }
 
         $how_long = $request->how_long;
-        $start_date = !empty($how_long[0]) ? $how_long[0] : null;
-        $end_date = !empty($how_long[1]) ? $how_long[1] : null;
+
+        $start_date = date("Y-m-d", strtotime(!empty($how_long[0]) ? $how_long[0] : null));
+        $end_date = date("Y-m-d", strtotime(!empty($how_long[1]) ? $how_long[1] : null));
 
         $decision = Decision::create([
             'user_id' => $request->user_id,
@@ -153,8 +154,8 @@ class DecisionController extends Controller
         $decision = Decision::findOrFail($id);
 
         $how_long = $request->how_long;
-        $start_date = !empty($how_long[0]) ? $how_long[0] : null;
-        $end_date = !empty($how_long[1]) ? $how_long[1] : null;
+        $start_date = date("Y-m-d", strtotime(!empty($how_long[0]) ? $how_long[0] : null));
+        $end_date = date("Y-m-d", strtotime(!empty($how_long[1]) ? $how_long[1] : null));
 
         $decision->update([
             'title' => $request->title,

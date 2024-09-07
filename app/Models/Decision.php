@@ -26,6 +26,9 @@ class Decision extends Model
         'feedback',
         'date',
         'currency',
+        'start_date',
+        'end_date',
+
     ];
 
     /**
