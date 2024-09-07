@@ -16,10 +16,25 @@ class DecisionController extends Controller
      */
     public function index()
     {
-        // Fetch all decisions
-        $decisions = Decision::all();
+        // Get the authenticated admin user
+        $admin = Auth::guard('admin')->user();
+    
+        // Initialize the query for decisions
+        $query = Decision::query();
+    
+        // If the admin user is an editor, only include decisions related to users they have created
+        if ($admin->role === 'editor') {
+            $query->whereHas('user', function ($q) use ($admin) {
+                $q->where('creator_id', $admin->id);
+            });
+        }
+    
+        // Fetch the decisions based on the query
+        $decisions = $query->get();
+    
         return response()->json($decisions);
     }
+    
 
     /**
      * Show the form for creating a new decision.
@@ -82,7 +97,7 @@ class DecisionController extends Controller
     public function show($id)
     {
         // Fetch a single decision by its ID
-        $decision = Decision::with('decisions')->findOrFail($id);
+        $decision = Decision::with('user')->findOrFail($id);
         return response()->json($decision);
     }
 
