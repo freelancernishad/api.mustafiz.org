@@ -62,3 +62,23 @@ function routeUsesMiddleware($route, $middlewareName)
 
     return false;
 }
+
+
+
+ function calculateDuration($startDate, $endDate)
+{
+    $start = \Carbon\Carbon::parse($startDate);
+    $end = \Carbon\Carbon::parse($endDate);
+
+    $days = $start->diffInDays($end);
+    $months = $start->diffInMonths($end);
+    $years = $start->diffInYears($end);
+
+    return [
+        'start_date' => $startDate,
+        'end_date' => $endDate,
+        'days' => $days,
+        'months' => $months,
+        'years' => $years,
+    ];
+}

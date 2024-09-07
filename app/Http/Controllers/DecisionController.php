@@ -6,9 +6,11 @@ use App\Models\Decision;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class DecisionController extends Controller
 {
+
     /**
      * Display a listing of all decisions.
      *
@@ -16,25 +18,23 @@ class DecisionController extends Controller
      */
     public function index()
     {
-        // Get the authenticated admin user
         $admin = Auth::guard('admin')->user();
-    
-        // Initialize the query for decisions
         $query = Decision::query();
-    
-        // If the admin user is an editor, only include decisions related to users they have created
+
         if ($admin->role === 'editor') {
             $query->whereHas('user', function ($q) use ($admin) {
                 $q->where('creator_id', $admin->id);
             });
         }
-    
-        // Fetch the decisions based on the query
-        $decisions = $query->get();
-    
+
+        $decisions = $query->get()->map(function ($decision) {
+            $duration = calculateDuration($decision->start_date, $decision->end_date);
+            $decision->how_long = $duration;
+            return $decision;
+        });
+
         return response()->json($decisions);
     }
-    
 
     /**
      * Show the form for creating a new decision.
@@ -54,39 +54,44 @@ class DecisionController extends Controller
      */
     public function store(Request $request)
     {
-        // Define validation rules
         $rules = [
             'user_id' => 'required|exists:users,id',
             'title' => 'required|string|max:255',
             'why' => 'required|string',
-            'how_long' => 'required|string|max:255',
+            'how_long' => 'required|array|min:2',
+            'how_long.*' => 'date_format:Y-m-d\TH:i:s.u\Z',
             'how_much' => 'required|numeric',
             'currency' => 'required|string|max:3',
             'note' => 'nullable|string',
             'status' => 'required|string|in:pending,waiting_approval,approved,reject',
-
         ];
 
-        // Validate the request data
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Create a new decision
+        $how_long = $request->how_long;
+        $start_date = !empty($how_long[0]) ? $how_long[0] : null;
+        $end_date = !empty($how_long[1]) ? $how_long[1] : null;
+
         $decision = Decision::create([
             'user_id' => $request->user_id,
             'title' => $request->title,
             'why' => $request->why,
-            'how_long' => $request->how_long,
+            'how_long' => json_encode($request->how_long),
             'how_much' => $request->how_much,
-            'currency' => $request->currency, 
+            'currency' => $request->currency,
             'note' => $request->note,
             'status' => $request->status,
-            
-            'date' => now(), // Automatically set the current date
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'date' => now(),
         ]);
+
+        $duration = calculateDuration($start_date, $end_date);
+        $decision->how_long = $duration;
 
         return response()->json($decision, 201);
     }
@@ -99,8 +104,10 @@ class DecisionController extends Controller
      */
     public function show($id)
     {
-        // Fetch a single decision by its ID
         $decision = Decision::with('user')->findOrFail($id);
+        $duration = calculateDuration($decision->start_date, $decision->end_date);
+        $decision->how_long = $duration;
+
         return response()->json($decision);
     }
 
@@ -124,11 +131,11 @@ class DecisionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Define validation rules
         $rules = [
             'title' => 'required|string|max:255',
             'why' => 'required|string',
-            'how_long' => 'required|string|max:255',
+            'how_long' => 'required|array|min:2',
+            'how_long.*' => 'date_format:Y-m-d\TH:i:s.u\Z',
             'how_much' => 'required|numeric',
             'currency' => 'required|string|max:3',
             'note' => 'nullable|string',
@@ -137,27 +144,34 @@ class DecisionController extends Controller
             'feedback' => 'nullable|string',
         ];
 
-        // Validate the request data
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        // Fetch the decision and update its details
         $decision = Decision::findOrFail($id);
+
+        $how_long = $request->how_long;
+        $start_date = !empty($how_long[0]) ? $how_long[0] : null;
+        $end_date = !empty($how_long[1]) ? $how_long[1] : null;
+
         $decision->update([
             'title' => $request->title,
             'why' => $request->why,
-            'how_long' => $request->how_long,
+            'how_long' => json_encode($request->how_long),
             'how_much' => $request->how_much,
             'currency' => $request->currency,
             'note' => $request->note,
             'status' => $request->status,
             'approved_amount' => $request->approved_amount,
             'feedback' => $request->feedback,
-            // Do not update the 'date' field
+            'start_date' => $start_date,
+            'end_date' => $end_date,
         ]);
+
+        $duration = calculateDuration($start_date, $end_date);
+        $decision->how_long = $duration;
 
         return response()->json($decision);
     }
@@ -170,7 +184,6 @@ class DecisionController extends Controller
      */
     public function destroy($id)
     {
-        // Fetch the decision and delete it
         $decision = Decision::findOrFail($id);
         $decision->delete();
 
@@ -184,151 +197,122 @@ class DecisionController extends Controller
      */
     public function pending()
     {
-        // Get the authenticated admin user
         $admin = Auth::guard('admin')->user();
-
-        // Initialize the query for decisions
         $query = Decision::where('status', 'pending');
 
-        // If the admin user is an editor, only include decisions related to users they have created
         if ($admin->role === 'editor') {
             $query->whereHas('user', function ($q) use ($admin) {
                 $q->where('creator_id', $admin->id);
             });
         }
 
-        // Fetch the decisions based on the query
-        $decisions = $query->get();
-
-        return response()->json($decisions);
-    }
-
-    public function waitingApproval()
-    {
-        // Get the authenticated admin user
-        $admin = Auth::guard('admin')->user();
-
-        // Initialize the query for decisions
-        $query = Decision::where('status', 'waiting_approval');
-
-        // If the admin user is an editor, only include decisions related to users they have created
-        if ($admin->role === 'editor') {
-            $query->whereHas('user', function ($q) use ($admin) {
-                $q->where('creator_id', $admin->id);
-            });
-        }
-
-        // Fetch the decisions based on the query
-        $decisions = $query->get();
-
-        return response()->json($decisions);
-    }
-
-    public function approved()
-    {
-        // Get the authenticated admin user
-        $admin = Auth::guard('admin')->user();
-
-        // Initialize the query for decisions
-        $query = Decision::where('status', 'approved');
-
-        // If the admin user is an editor, only include decisions related to users they have created
-        if ($admin->role === 'editor') {
-            $query->whereHas('user', function ($q) use ($admin) {
-                $q->where('creator_id', $admin->id);
-            });
-        }
-
-        // Fetch the decisions based on the query
-        $decisions = $query->get();
-
-        return response()->json($decisions);
-    }
-
-    public function reject()
-    {
-        // Get the authenticated admin user
-        $admin = Auth::guard('admin')->user();
-
-        // Initialize the query for decisions
-        $query = Decision::where('status', 'reject');
-
-        // If the admin user is an editor, only include decisions related to users they have created
-        if ($admin->role === 'editor') {
-            $query->whereHas('user', function ($q) use ($admin) {
-                $q->where('creator_id', $admin->id);
-            });
-        }
-
-        // Fetch the decisions based on the query
-        $decisions = $query->get();
-
-        return response()->json($decisions);
-    }
-
-    public function byStatus($status)
-    {
-        // Get the authenticated admin user
-        $admin = Auth::guard('admin')->user();
-
-        // Validate status
-        if (!in_array($status, ['pending', 'waiting_approval', 'approved', 'reject'])) {
-            return response()->json(['error' => 'Invalid status'], 400);
-        }
-
-        // Initialize the query for decisions
-        $query = Decision::where('status', $status);
-
-        // If the admin user is an editor, only include decisions related to users they have created
-        if ($admin->role === 'editor') {
-            $query->whereHas('user', function ($q) use ($admin) {
-                $q->where('creator_id', $admin->id);
-            });
-        }
-
-        // Fetch the decisions based on the query
-        $decisions = $query->get();
+        $decisions = $query->get()->map(function ($decision) {
+            $duration = calculateDuration($decision->start_date, $decision->end_date);
+            $decision->how_long = $duration;
+            return $decision;
+        });
 
         return response()->json($decisions);
     }
 
     /**
-     * Update the status of a specific decision.
+     * Display a listing of decisions with 'waiting_approval' status.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function updateStatus(Request $request, $id)
+    public function waitingApproval()
     {
-        // Define validation rules
-        $rules = [
-            'status' => 'required|in:pending,waiting_approval,approved,reject',
-            'approved_amount' => 'nullable|numeric',
-            'feedback' => 'nullable|string',
+        $admin = Auth::guard('admin')->user();
+        $query = Decision::where('status', 'waiting_approval');
 
-        ];
-
-        // Validate the request data
-        $validator = Validator::make($request->all(), $rules);
-
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+        if ($admin->role === 'editor') {
+            $query->whereHas('user', function ($q) use ($admin) {
+                $q->where('creator_id', $admin->id);
+            });
         }
 
-        // Find the decision by ID
-        $decision = Decision::findOrFail($id);
+        $decisions = $query->get()->map(function ($decision) {
+            $duration = calculateDuration($decision->start_date, $decision->end_date);
+            $decision->how_long = $duration;
+            return $decision;
+        });
 
-        // Update the status
-        $decision->status = $request->input('status');
-        $decision->approved_amount = $request->input('approved_amount');
-        $decision->feedback = $request->input('feedback');
-        $decision->save();
+        return response()->json($decisions);
+    }
 
-        // Return a success response
-        return response()->json([
-            'message' => 'Decision status updated successfully.',
-            'decision' => $decision
-        ]);
+    /**
+     * Display a listing of decisions with 'approved' status.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function approved()
+    {
+        $admin = Auth::guard('admin')->user();
+        $query = Decision::where('status', 'approved');
+
+        if ($admin->role === 'editor') {
+            $query->whereHas('user', function ($q) use ($admin) {
+                $q->where('creator_id', $admin->id);
+            });
+        }
+
+        $decisions = $query->get()->map(function ($decision) {
+            $duration = calculateDuration($decision->start_date, $decision->end_date);
+            $decision->how_long = $duration;
+            return $decision;
+        });
+
+        return response()->json($decisions);
+    }
+
+    /**
+     * Display a listing of decisions with 'reject' status.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function reject()
+    {
+        $admin = Auth::guard('admin')->user();
+        $query = Decision::where('status', 'reject');
+
+        if ($admin->role === 'editor') {
+            $query->whereHas('user', function ($q) use ($admin) {
+                $q->where('creator_id', $admin->id);
+            });
+        }
+
+        $decisions = $query->get()->map(function ($decision) {
+            $duration = calculateDuration($decision->start_date, $decision->end_date);
+            $decision->how_long = $duration;
+            return $decision;
+        });
+
+        return response()->json($decisions);
+    }
+
+    /**
+     * Display a listing of decisions by status.
+     *
+     * @param  string  $status
+     * @return \Illuminate\Http\Response
+     */
+    public function byStatus($status)
+    {
+        $admin = Auth::guard('admin')->user();
+        $query = Decision::where('status', $status);
+
+        if ($admin->role === 'editor') {
+            $query->whereHas('user', function ($q) use ($admin) {
+                $q->where('creator_id', $admin->id);
+            });
+        }
+
+        $decisions = $query->get()->map(function ($decision) {
+            $duration = calculateDuration($decision->start_date, $decision->end_date);
+            $decision->how_long = $duration;
+            return $decision;
+        });
+
+        return response()->json($decisions);
     }
 }
