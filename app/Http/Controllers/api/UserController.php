@@ -84,8 +84,6 @@ class UserController extends Controller
      // Show user details
 
 
-
-
      public function allUserList(Request $request)
      {
          // Get the authenticated admin user
@@ -138,6 +136,7 @@ class UserController extends Controller
          return response()->json($users);
      }
      
+
 
 
 
