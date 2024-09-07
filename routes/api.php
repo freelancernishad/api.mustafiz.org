@@ -291,7 +291,7 @@ Route::group(['middleware' => ['auth:organization']], function () {
 Route::post('/admin/login', [AdminAuthController::class, 'login']);
 Route::post('/admin/check/login', [AdminAuthController::class, 'checkTokenExpiration']);
 Route::post('/admin/check-token', [AdminAuthController::class, 'checkToken']);
-Route::post('admin/v2/register', [AdminAuthController::class, 'register']);
+Route::post('admin/v2/reg', [AdminAuthController::class, 'register']);
 
 Route::group(['middleware' => ['auth:admin']], function () {
 
