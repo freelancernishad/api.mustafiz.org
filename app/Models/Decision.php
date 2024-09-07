@@ -25,6 +25,7 @@ class Decision extends Model
         'approved_amount',
         'feedback',
         'date',
+        'currency',
     ];
 
     /**

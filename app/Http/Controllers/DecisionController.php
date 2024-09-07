@@ -61,6 +61,7 @@ class DecisionController extends Controller
             'why' => 'required|string',
             'how_long' => 'required|string|max:255',
             'how_much' => 'required|numeric',
+            'currency' => 'required|string|max:3',
             'note' => 'nullable|string',
             'status' => 'required|string|in:pending,waiting_approval,approved,reject',
 
@@ -80,8 +81,10 @@ class DecisionController extends Controller
             'why' => $request->why,
             'how_long' => $request->how_long,
             'how_much' => $request->how_much,
+            'currency' => $request->currency, 
             'note' => $request->note,
             'status' => $request->status,
+            
             'date' => now(), // Automatically set the current date
         ]);
 
@@ -127,6 +130,7 @@ class DecisionController extends Controller
             'why' => 'required|string',
             'how_long' => 'required|string|max:255',
             'how_much' => 'required|numeric',
+            'currency' => 'required|string|max:3',
             'note' => 'nullable|string',
             'status' => 'required|string|in:pending,waiting_approval,approved,reject',
             'approved_amount' => 'nullable|numeric',
@@ -147,6 +151,7 @@ class DecisionController extends Controller
             'why' => $request->why,
             'how_long' => $request->how_long,
             'how_much' => $request->how_much,
+            'currency' => $request->currency,
             'note' => $request->note,
             'status' => $request->status,
             'approved_amount' => $request->approved_amount,
