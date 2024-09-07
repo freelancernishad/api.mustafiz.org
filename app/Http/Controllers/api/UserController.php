@@ -86,41 +86,41 @@ class UserController extends Controller
      {
          // Get the authenticated admin user
          $admin = Auth::guard('admin')->user();
-     
+
          // Start the query
          $query = User::query();
-     
+
          // If the admin user is an editor, only include users created by this admin
          if ($admin->role === 'editor') {
              $query->where('creator_id', $admin->id);
          }
-     
+
          // Filter by category if provided
          if ($request->has('category')) {
              $query->where('category', $request->input('category'));
          }
-     
+
          // Filter by status if provided
          if ($request->has('status')) {
              $status = $request->input('status', 'pending');
              $query->where('status', $status);
          }
-     
+
          // Filter by religion if provided
          if ($request->has('religion')) {
              $query->where('religion', $request->input('religion'));
          }
-     
+
          // Filter by education level if provided
          if ($request->has('education')) {
              $query->where('education_level', $request->input('education'));
          }
-     
+
          // Filter by country if provided
          if ($request->has('country')) {
              $query->where('country_of_birth', $request->input('country'));
          }
-     
+
          // Search by name, mobile, or current_address if provided
          if ($request->has('searchText')) {
              $searchText = $request->input('searchText');
@@ -130,22 +130,48 @@ class UserController extends Controller
                    ->orWhere('current_address', 'LIKE', "%{$searchText}%");
              });
          }
-     
+
          // Order by id and get the results with relationships
          $users = $query->with(['decisions', 'creator'])->orderBy('id', 'desc')->get();
-     
+
          return response()->json($users);
      }
-     
 
 
 
 
-     function getUser(Request $request, $id){
+     function getUser(Request $request, $id)
+     {
+         // Retrieve the user with related decisions and creator
+         $user = User::with(['decisions', 'creator'])->find($id);
 
-        $user = User::with(['decisions','creator'])->find($id);
-        return response()->json($user);
+         if (!$user) {
+             return response()->json(['message' => 'User not found'], 404);
+         }
+
+         // Iterate through each decision to calculate the duration and modify how_long
+         foreach ($user->decisions as $decision) {
+             $start_date = $decision->start_date;
+             $end_date = $decision->end_date;
+
+             // Calculate the duration
+             $duration = calculateDuration($start_date, $end_date);
+
+             // Update how_long with the start_date, end_date, and duration (days, months, years)
+             $decision->how_long = [
+                 'start_date' => $start_date,
+                 'end_date' => $end_date,
+                 'days' => $duration['days'] ?? 0,
+                 'months' => $duration['months'] ?? 0,
+                 'years' => $duration['years'] ?? 0,
+             ];
+         }
+
+         return response()->json($user);
      }
+
+
+
      function updateUserStatus(Request $request) {
 
         $id = $request->id;
