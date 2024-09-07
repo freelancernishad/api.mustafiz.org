@@ -82,22 +82,18 @@ class UserController extends Controller
      }
 
      // Show user details
-
-
      public function allUserList(Request $request)
      {
          // Get the authenticated admin user
          $admin = Auth::guard('admin')->user();
      
-         // Check if the admin user has the 'editor' role
-         if ($admin->role === 'editor') {
-             // If the admin is an editor, only return users created by this admin
-             $users = User::where('creator_id', $admin->id)->with(['decisions', 'creator'])->orderBy('id', 'desc')->get();
-             return response()->json($users);
-         }
-     
-         // If the admin is not an editor, proceed with the original query
+         // Start the query
          $query = User::query();
+     
+         // If the admin user is an editor, only include users created by this admin
+         if ($admin->role === 'editor') {
+             $query->where('creator_id', $admin->id);
+         }
      
          // Filter by category if provided
          if ($request->has('category')) {
@@ -120,6 +116,11 @@ class UserController extends Controller
              $query->where('education_level', $request->input('education'));
          }
      
+         // Filter by country if provided
+         if ($request->has('country')) {
+             $query->where('country_of_birth', $request->input('country'));
+         }
+     
          // Search by name, mobile, or current_address if provided
          if ($request->has('searchText')) {
              $searchText = $request->input('searchText');
@@ -130,7 +131,7 @@ class UserController extends Controller
              });
          }
      
-         // Order by id and get the results
+         // Order by id and get the results with relationships
          $users = $query->with(['decisions', 'creator'])->orderBy('id', 'desc')->get();
      
          return response()->json($users);
