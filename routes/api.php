@@ -306,6 +306,8 @@ Route::group(['middleware' => ['auth:admin']], function () {
         return 'admin access';
         });
 
+
+        Route::get('/users/creator/{creatorId}', [UserController::class, 'getUsersByCreatorId']);
         Route::get('all/users/list', [UserController::class, 'allUserList']);
 
         Route::get('admin/get/user/{id}', [UserController::class, 'getUser']);

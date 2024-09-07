@@ -14,6 +14,15 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
 
+
+
+    public function getUsersByCreatorId($creatorId)
+    {
+        // Fetch users by creator_id
+        $users = User::getUsersByCreator($creatorId);
+
+        return response()->json($users);
+    }
      // User update
      public function update(Request $request, $id)
      {
@@ -79,29 +88,40 @@ class UserController extends Controller
 
      public function allUserList(Request $request)
      {
+         // Get the authenticated admin user
+         $admin = Auth::guard('admin')->user();
+     
+         // Check if the admin user has the 'editor' role
+         if ($admin->role === 'editor') {
+             // If the admin is an editor, only return users created by this admin
+             $users = User::where('creator_id', $admin->id)->with(['decisions', 'creator'])->orderBy('id', 'desc')->get();
+             return response()->json($users);
+         }
+     
+         // If the admin is not an editor, proceed with the original query
          $query = User::query();
-
+     
          // Filter by category if provided
          if ($request->has('category')) {
              $query->where('category', $request->input('category'));
          }
-
+     
          // Filter by status if provided
          if ($request->has('status')) {
              $status = $request->input('status', 'pending');
              $query->where('status', $status);
          }
-
+     
          // Filter by religion if provided
          if ($request->has('religion')) {
              $query->where('religion', $request->input('religion'));
          }
-
+     
          // Filter by education level if provided
          if ($request->has('education')) {
              $query->where('education_level', $request->input('education'));
          }
-
+     
          // Search by name, mobile, or current_address if provided
          if ($request->has('searchText')) {
              $searchText = $request->input('searchText');
@@ -111,13 +131,13 @@ class UserController extends Controller
                    ->orWhere('current_address', 'LIKE', "%{$searchText}%");
              });
          }
-
+     
          // Order by id and get the results
-         $users = $query->with(['decisions','creator'])->orderBy('id', 'desc')->get();
-
+         $users = $query->with(['decisions', 'creator'])->orderBy('id', 'desc')->get();
+     
          return response()->json($users);
      }
-
+     
 
 
 

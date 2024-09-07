@@ -193,5 +193,9 @@ public function permissions()
         return $this->belongsTo(Admin::class, 'creator_id');
     }
 
+    public static function getUsersByCreator($creatorId)
+    {
+        return self::where('creator_id', $creatorId)->get();
+    }
 
 }
