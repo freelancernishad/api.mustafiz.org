@@ -179,62 +179,111 @@ class DecisionController extends Controller
      */
     public function pending()
     {
-        // Fetch all pending decisions
-        $decisions = Decision::where('status', 'pending')->get();
+        // Get the authenticated admin user
+        $admin = Auth::guard('admin')->user();
+
+        // Initialize the query for decisions
+        $query = Decision::where('status', 'pending');
+
+        // If the admin user is an editor, only include decisions related to users they have created
+        if ($admin->role === 'editor') {
+            $query->whereHas('user', function ($q) use ($admin) {
+                $q->where('creator_id', $admin->id);
+            });
+        }
+
+        // Fetch the decisions based on the query
+        $decisions = $query->get();
+
         return response()->json($decisions);
     }
 
-    /**
-     * Display a listing of decisions with 'waiting_approval' status.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function waitingApproval()
     {
-        // Fetch all decisions waiting for approval
-        $decisions = Decision::where('status', 'waiting_approval')->get();
+        // Get the authenticated admin user
+        $admin = Auth::guard('admin')->user();
+
+        // Initialize the query for decisions
+        $query = Decision::where('status', 'waiting_approval');
+
+        // If the admin user is an editor, only include decisions related to users they have created
+        if ($admin->role === 'editor') {
+            $query->whereHas('user', function ($q) use ($admin) {
+                $q->where('creator_id', $admin->id);
+            });
+        }
+
+        // Fetch the decisions based on the query
+        $decisions = $query->get();
+
         return response()->json($decisions);
     }
 
-    /**
-     * Display a listing of decisions with 'approved' status.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function approved()
     {
-        // Fetch all approved decisions
-        $decisions = Decision::where('status', 'approved')->get();
+        // Get the authenticated admin user
+        $admin = Auth::guard('admin')->user();
+
+        // Initialize the query for decisions
+        $query = Decision::where('status', 'approved');
+
+        // If the admin user is an editor, only include decisions related to users they have created
+        if ($admin->role === 'editor') {
+            $query->whereHas('user', function ($q) use ($admin) {
+                $q->where('creator_id', $admin->id);
+            });
+        }
+
+        // Fetch the decisions based on the query
+        $decisions = $query->get();
+
         return response()->json($decisions);
     }
 
-    /**
-     * Display a listing of decisions with 'reject' status.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function reject()
     {
-        // Fetch all rejected decisions
-        $decisions = Decision::where('status', 'reject')->get();
+        // Get the authenticated admin user
+        $admin = Auth::guard('admin')->user();
+
+        // Initialize the query for decisions
+        $query = Decision::where('status', 'reject');
+
+        // If the admin user is an editor, only include decisions related to users they have created
+        if ($admin->role === 'editor') {
+            $query->whereHas('user', function ($q) use ($admin) {
+                $q->where('creator_id', $admin->id);
+            });
+        }
+
+        // Fetch the decisions based on the query
+        $decisions = $query->get();
+
         return response()->json($decisions);
     }
 
-    /**
-     * Display a listing of decisions by status.
-     *
-     * @param  string  $status
-     * @return \Illuminate\Http\Response
-     */
     public function byStatus($status)
     {
+        // Get the authenticated admin user
+        $admin = Auth::guard('admin')->user();
+
         // Validate status
         if (!in_array($status, ['pending', 'waiting_approval', 'approved', 'reject'])) {
             return response()->json(['error' => 'Invalid status'], 400);
         }
 
-        // Fetch decisions by status
-        $decisions = Decision::where('status', $status)->get();
+        // Initialize the query for decisions
+        $query = Decision::where('status', $status);
+
+        // If the admin user is an editor, only include decisions related to users they have created
+        if ($admin->role === 'editor') {
+            $query->whereHas('user', function ($q) use ($admin) {
+                $q->where('creator_id', $admin->id);
+            });
+        }
+
+        // Fetch the decisions based on the query
+        $decisions = $query->get();
+
         return response()->json($decisions);
     }
 
