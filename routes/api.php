@@ -20,12 +20,13 @@ use App\Http\Controllers\api\UserController;
 
 use App\Http\Controllers\DecisionController;
 use App\Http\Controllers\RoleUserController;
+use App\Http\Controllers\api\AdminController;
 use App\Http\Controllers\EmailAuthController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SocialLinkController;
 use App\Http\Controllers\api\StudentController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\AdvertisementController;
-use App\Http\Controllers\api\AdminController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\Auth\users\AuthController;
 use App\Http\Controllers\api\OrganizationController;
@@ -332,7 +333,7 @@ Route::group(['middleware' => ['auth:admin']], function () {
 
 
 
-
+        Route::resource('transactions', TransactionController::class);
 
 });
 
