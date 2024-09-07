@@ -29,6 +29,11 @@ class AdminAuthController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
+        // Check if the email already exists
+        $existingAdmin = Admin::where('email', $request->input('email'))->first();
+        if ($existingAdmin) {
+            return response()->json(['error' => 'Email already exists'], 409);
+        }
 
         $admin = new Admin([
             'name' => $request->input('name'),
@@ -39,8 +44,8 @@ class AdminAuthController extends Controller
         ]);
 
         $admin->save();
+
         return response()->json(['message' => 'Admin registered successfully'], 201);
-        // Return a response or redirect
     }
 
     public function login(Request $request)
