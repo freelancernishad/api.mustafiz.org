@@ -24,29 +24,38 @@ class AdminAuthController extends Controller
             'email' => 'required|string|email|max:255|unique:admins',
             'password' => 'required|string|min:8',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
-
-        // Check if the email already exists
-        $existingAdmin = Admin::where('email', $request->input('email'))->first();
-        if ($existingAdmin) {
-            return response()->json(['error' => 'Email already exists'], 409);
+    
+        try {
+            $admin = new Admin([
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'location' => $request->input('location'),
+                'role' => $request->input('role'),
+                'password' => Hash::make($request->input('password')),
+            ]);
+    
+            $admin->save();
+    
+            return response()->json(['message' => 'Admin registered successfully'], 201);
+    
+        } catch (\Exception $e) {
+            // Log the error message
+            \Log::error('Error during admin registration: ' . $e->getMessage());
+    
+            // Check if the error is related to a duplicate entry
+            if ($e->getCode() == 23000) { // 23000 is the SQLSTATE code for integrity constraint violation
+                return response()->json(['error' => 'Email already exists'], 409);
+            }
+    
+            // Return a generic error response if it's another type of error
+            return response()->json(['error' => 'An error occurred during registration'], 500);
         }
-
-        $admin = new Admin([
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'location' => $request->input('location'),
-            'role' => $request->input('role'),
-            'password' => Hash::make($request->input('password')),
-        ]);
-
-        $admin->save();
-
-        return response()->json(['message' => 'Admin registered successfully'], 201);
     }
+    
 
     public function login(Request $request)
     {
