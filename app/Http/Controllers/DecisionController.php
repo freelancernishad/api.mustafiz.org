@@ -105,7 +105,7 @@ class DecisionController extends Controller
      */
     public function show($id)
     {
-        $decision = Decision::with('user')->findOrFail($id);
+        $decision = Decision::with(['user','transactions'])->findOrFail($id);
         $duration = calculateDuration($decision->start_date, $decision->end_date);
         $decision->how_long = $duration;
 
