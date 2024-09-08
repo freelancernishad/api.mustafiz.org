@@ -135,8 +135,8 @@ class DecisionController extends Controller
         $rules = [
             'title' => 'required|string|max:255',
             'why' => 'required|string',
-            'how_long' => 'required|array|min:2',
-            'how_long.*' => 'required',
+            'how_long' => 'nullable|array|min:2', // Allow how_long to be nullable
+            'how_long.*' => 'nullable', // Allow individual items to be nullable
             'how_much' => 'required|numeric',
             'currency' => 'required|string|max:3',
             'note' => 'nullable|string',
@@ -153,29 +153,32 @@ class DecisionController extends Controller
 
         $decision = Decision::findOrFail($id);
 
-        $how_long = $request->how_long;
-        $start_date = date("Y-m-d", strtotime(!empty($how_long[0]) ? $how_long[0] : null));
-        $end_date = date("Y-m-d", strtotime(!empty($how_long[1]) ? $how_long[1] : null));
-
-        $decision->update([
+        $updates = [
             'title' => $request->title,
             'why' => $request->why,
-            'how_long' => json_encode($request->how_long),
             'how_much' => $request->how_much,
             'currency' => $request->currency,
             'note' => $request->note,
             'status' => $request->status,
             'approved_amount' => $request->approved_amount,
             'feedback' => $request->feedback,
-            'start_date' => $start_date,
-            'end_date' => $end_date,
-        ]);
+        ];
 
-        $duration = calculateDuration($start_date, $end_date);
-        $decision->how_long = $duration;
+        if ($request->has('how_long')) {
+            $how_long = $request->how_long;
+            $start_date = date("Y-m-d", strtotime(!empty($how_long[0]) ? $how_long[0] : null));
+            $end_date = date("Y-m-d", strtotime(!empty($how_long[1]) ? $how_long[1] : null));
+
+            $updates['how_long'] = json_encode($how_long);
+            $updates['start_date'] = $start_date;
+            $updates['end_date'] = $end_date;
+        }
+
+        $decision->update($updates);
 
         return response()->json($decision);
     }
+
 
     /**
      * Remove the specified decision from storage.
