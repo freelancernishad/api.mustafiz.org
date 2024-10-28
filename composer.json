@@ -12,6 +12,7 @@
         "laravel/sanctum": "*",
         "laravel/tinker": "^2.8",
         "opcodesio/log-viewer": "^3.9",
+        "stripe/stripe-php": "^16.1",
         "symfony/process": "^6.4",
         "tymon/jwt-auth": "^2.0"
     },

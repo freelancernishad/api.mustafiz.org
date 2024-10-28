@@ -33,8 +33,7 @@ use App\Http\Controllers\api\OrganizationController;
 use App\Http\Controllers\Auth\admins\AdminAuthController;
 use App\Http\Controllers\Auth\students\StudentAuthController;
 use App\Http\Controllers\Auth\orgs\OrganizationAuthController;
-
-
+use App\Http\Controllers\StripePaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -356,6 +355,7 @@ Route::middleware('auth:student')->group(function () {
 
 
 
-
-
+Route::post('/make/donate', [StripePaymentController::class, 'createPayment']);
+// Stripe webhook
+Route::post('stripe/donate/webhook', [StripePaymentController::class, 'handleDonateWebhook']);
 

@@ -1,5 +1,8 @@
 <?php
-
+use Stripe\Stripe;
+use App\Models\Donner;
+use Illuminate\Http\Request;
+use App\Models\DonationPayment;
 function int_en_to_bn($number)
 {
 
@@ -81,4 +84,93 @@ function routeUsesMiddleware($route, $middlewareName)
         'months' => $months,
         'years' => $years,
     ];
+}
+
+
+
+function stripe($array = [])
+{
+    // Set Stripe API key
+    Stripe::setApiKey(env('STRIPE_SECRET'));
+
+
+    // Create a new payment record in the database
+    $payment = createDonationPayment($array);
+
+    // Create Stripe checkout session
+    $session = \Stripe\Checkout\Session::create([
+        'payment_method_types' => ['card'],
+        'line_items' => [[
+            'price_data' => [
+                'currency' => 'usd',
+                'product_data' => [
+                    'name' => 'Payment for ' . ($array['first_name'].' '.$array['last_name'] ?? 'no name'),
+                ],
+                'unit_amount' => $array['amount'] * 100, // Amount in cents
+            ],
+            'quantity' => 1,
+        ]],
+        'mode' => 'payment',
+        'payment_intent_data' => [
+            'capture_method' => 'automatic', // Adjust capture method if necessary
+        ],
+        'client_reference_id' => $payment->trx_id, // Set client reference id to trxId or other unique identifier
+        'success_url' => $array['success_url'] . '?session_id={CHECKOUT_SESSION_ID}',
+        'cancel_url' => $array['cancel_url'] . '?session_id={CHECKOUT_SESSION_ID}',
+    ]);
+
+    Log::info("session:".$session);
+
+    // Update payment record with Stripe URL and CHECKOUT_SESSION_ID
+    $payment->update([
+        'paymentUrl' => $session->url,
+        'checkout_session_id' => $session->id, // Save session ID to payment model
+    ]);
+
+    // Redirect the user to Stripe checkout
+    return $session->url;
+}
+
+
+
+function createDonner($array = [])
+{
+    $donner = Donner::firstOrCreate(
+        ['email' => $array['email']], // Check for an existing donor by email
+        [
+            'first_name' => $array['first_name'] ?? '',
+            'last_name' => $array['last_name'] ?? '',
+            'phone' => $array['phone'] ?? '',
+            'address' => $array['address'] ?? '',
+            'address_line_2' => $array['address_line_2'] ?? '',
+            'city' => $array['city'] ?? '',
+            'country' => $array['country'] ?? '',
+            'zip' => $array['zip'] ?? '',
+            'payment_type' => $array['payment_type'] ?? '',
+        ]
+    );
+
+    return $donner;
+}
+
+
+
+function createDonationPayment($array=[])
+{
+
+    $donner = createDonner($array);
+
+    $donationPayment = DonationPayment::create([
+        'donner_id' => $donner->id ?? '',
+        'trx_id' => time() ?? '',
+        'amount' => $array['amount'] ?? '',
+        'currency' => $array['currency'] ?? 'USD',
+        'status' => 'pending',
+        'date' => now(),
+        'month' => now()->month,
+        'year' => now()->year,
+        'method' => $array['method'] ?? 'card',
+    ]);
+
+    return $donationPayment;
 }
