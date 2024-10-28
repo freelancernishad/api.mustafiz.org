@@ -120,7 +120,7 @@ class StripePaymentController extends Controller
         } catch (\Stripe\Exception\SignatureVerificationException $e) {
             return jsonResponse(false, 'Invalid Signature', null, 400);
         } catch (\Exception $e) {
-            return jsonResponse(false, 'Webhook Error', null, 400);
+            return jsonResponse(false, "Webhook Error $e", null, 400);
         }
 
         return jsonResponse(true, 'Webhook received', null, 200);
