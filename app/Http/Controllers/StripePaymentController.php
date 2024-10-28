@@ -105,7 +105,7 @@ class StripePaymentController extends Controller
                 $session = $event->data->object;
 
                 // Attempt to find the donation payment by trxId
-                $payment = DonationPayment::where('trxId', $session->client_reference_id)->first();
+                $payment = DonationPayment::where('trx_id', $session->client_reference_id)->first();
 
                 if ($payment) {
                     // Update the payment status based on the session's payment status
