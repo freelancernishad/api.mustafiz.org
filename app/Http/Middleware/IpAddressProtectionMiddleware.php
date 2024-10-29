@@ -16,6 +16,7 @@ class IpAddressProtectionMiddleware
         'https://www.help.mustafiz.org',
         'https://mustafiz.org',
         'https://www.mustafiz.org',
+        'http://localhost:5174',
 
 
 
