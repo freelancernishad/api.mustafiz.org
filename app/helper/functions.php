@@ -144,6 +144,16 @@ function stripe($array = [])
     'payco',                   // Payco (South Korea)
     'samsung_pay',             // Samsung Pay
 ],
+
+'payment_method_options' => [
+    'acss_debit' => [
+        'mandate_options' => [
+            'payment_schedule' => 'sporadic', // 'sporadic' or 'interval'
+            'transaction_type' => 'personal', // 'personal' or 'business'
+        ],
+    ],
+],
+
         'line_items' => [[
             'price_data' => [
                 'currency' => 'usd',
