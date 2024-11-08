@@ -101,10 +101,11 @@ function stripe($array = [])
     $session = \Stripe\Checkout\Session::create([
         'payment_method_types' => [
     'card',                    // Credit/debit cards
-    'acss_debit',              // ACSS Debit (Canada)
     'amazon_pay',              // Amazon Pay (Region-specific)
+    'us_bank_account',         // US bank accounts (ACH)
 
 
+    // 'acss_debit',              // ACSS Debit (Canada)
     // 'affirm',                  // Affirm (U.S.)
     // 'afterpay_clearpay',       // Afterpay/Clearpay (Australia, New Zealand, UK, U.S.)
     // 'alipay',                  // Alipay (China)
@@ -133,7 +134,6 @@ function stripe($array = [])
     // 'sepa_debit',              // SEPA Direct Debit (Europe)
     // 'sofort',                  // SOFORT (Europe)
     // 'swish',                   // Swish (Sweden)
-    // 'us_bank_account',         // US bank accounts (ACH)
     // 'wechat_pay',              // WeChat Pay (China)
     // 'revolut_pay',             // Revolut Pay
     // 'mobilepay',               // MobilePay (Denmark, Finland)
