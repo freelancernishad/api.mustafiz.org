@@ -99,7 +99,19 @@ function stripe($array = [])
 
     // Create Stripe checkout session
     $session = \Stripe\Checkout\Session::create([
-        'payment_method_types' => ['card'],
+        'payment_method_types' => [
+            'card',
+            'ach_debit',
+            'alipay',
+            'bancontact',
+            'ideal',
+            'p24',
+            'sepa_debit',
+            'sofort',
+            'wechat_pay',
+            'klarna',
+            'afterpay_clearpay',
+        ],
         'line_items' => [[
             'price_data' => [
                 'currency' => 'usd',
