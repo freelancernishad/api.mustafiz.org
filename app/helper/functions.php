@@ -102,57 +102,59 @@ function stripe($array = [])
         'payment_method_types' => [
     'card',                    // Credit/debit cards
     'acss_debit',              // ACSS Debit (Canada)
-    'affirm',                  // Affirm (U.S.)
-    'afterpay_clearpay',       // Afterpay/Clearpay (Australia, New Zealand, UK, U.S.)
-    'alipay',                  // Alipay (China)
-    'au_becs_debit',           // BECS Direct Debit (Australia)
-    'bacs_debit',              // BACS Direct Debit (UK)
-    'bancontact',              // Bancontact (Belgium)
-    'blik',                    // BLIK (Poland)
-    'boleto',                  // Boleto (Brazil)
-    'cashapp',                 // Cash App Pay (U.S.)
-    'customer_balance',        // Customer balance (For internal credits)
-    'eps',                     // EPS (Austria)
-    'fpx',                     // FPX (Malaysia)
-    'giropay',                 // Giropay (Germany)
-    'grabpay',                 // GrabPay (Southeast Asia)
-    'ideal',                   // iDEAL (Netherlands)
-    'klarna',                  // Klarna (Europe, North America)
-    'konbini',                 // Konbini (Japan)
-    'link',                    // Link (Stripe's saved payment method)
-    'multibanco',              // Multibanco (Portugal)
-    'oxxo',                    // OXXO (Mexico)
-    'p24',                     // Przelewy24 (Poland)
-    'paynow',                  // PayNow (Singapore)
-    'paypal',                  // PayPal
-    'pix',                     // Pix (Brazil)
-    'promptpay',               // PromptPay (Thailand)
-    'sepa_debit',              // SEPA Direct Debit (Europe)
-    'sofort',                  // SOFORT (Europe)
-    'swish',                   // Swish (Sweden)
-    'us_bank_account',         // US bank accounts (ACH)
-    'wechat_pay',              // WeChat Pay (China)
-    'revolut_pay',             // Revolut Pay
-    'mobilepay',               // MobilePay (Denmark, Finland)
-    'zip',                     // Zip (Australia, New Zealand)
     'amazon_pay',              // Amazon Pay (Region-specific)
-    'alma',                    // Alma (France)
-    'twint',                   // TWINT (Switzerland)
-    'kr_card',                 // Korean Cards (South Korea)
-    'naver_pay',               // Naver Pay (South Korea)
-    'kakao_pay',               // KakaoPay (South Korea)
-    'payco',                   // Payco (South Korea)
-    'samsung_pay',             // Samsung Pay
+
+
+    // 'affirm',                  // Affirm (U.S.)
+    // 'afterpay_clearpay',       // Afterpay/Clearpay (Australia, New Zealand, UK, U.S.)
+    // 'alipay',                  // Alipay (China)
+    // 'au_becs_debit',           // BECS Direct Debit (Australia)
+    // 'bacs_debit',              // BACS Direct Debit (UK)
+    // 'bancontact',              // Bancontact (Belgium)
+    // 'blik',                    // BLIK (Poland)
+    // 'boleto',                  // Boleto (Brazil)
+    // 'cashapp',                 // Cash App Pay (U.S.)
+    // 'customer_balance',        // Customer balance (For internal credits)
+    // 'eps',                     // EPS (Austria)
+    // 'fpx',                     // FPX (Malaysia)
+    // 'giropay',                 // Giropay (Germany)
+    // 'grabpay',                 // GrabPay (Southeast Asia)
+    // 'ideal',                   // iDEAL (Netherlands)
+    // 'klarna',                  // Klarna (Europe, North America)
+    // 'konbini',                 // Konbini (Japan)
+    // 'link',                    // Link (Stripe's saved payment method)
+    // 'multibanco',              // Multibanco (Portugal)
+    // 'oxxo',                    // OXXO (Mexico)
+    // 'p24',                     // Przelewy24 (Poland)
+    // 'paynow',                  // PayNow (Singapore)
+    // 'paypal',                  // PayPal
+    // 'pix',                     // Pix (Brazil)
+    // 'promptpay',               // PromptPay (Thailand)
+    // 'sepa_debit',              // SEPA Direct Debit (Europe)
+    // 'sofort',                  // SOFORT (Europe)
+    // 'swish',                   // Swish (Sweden)
+    // 'us_bank_account',         // US bank accounts (ACH)
+    // 'wechat_pay',              // WeChat Pay (China)
+    // 'revolut_pay',             // Revolut Pay
+    // 'mobilepay',               // MobilePay (Denmark, Finland)
+    // 'zip',                     // Zip (Australia, New Zealand)
+    // 'alma',                    // Alma (France)
+    // 'twint',                   // TWINT (Switzerland)
+    // 'kr_card',                 // Korean Cards (South Korea)
+    // 'naver_pay',               // Naver Pay (South Korea)
+    // 'kakao_pay',               // KakaoPay (South Korea)
+    // 'payco',                   // Payco (South Korea)
+    // 'samsung_pay',             // Samsung Pay
 ],
 
-'payment_method_options' => [
-    'acss_debit' => [
-        'mandate_options' => [
-            'payment_schedule' => 'sporadic', // 'sporadic' or 'interval'
-            'transaction_type' => 'personal', // 'personal' or 'business'
-        ],
-    ],
-],
+// 'payment_method_options' => [
+//     'acss_debit' => [
+//         'mandate_options' => [
+//             'payment_schedule' => 'sporadic', // 'sporadic' or 'interval'
+//             'transaction_type' => 'personal', // 'personal' or 'business'
+//         ],
+//     ],
+// ],
 
         'line_items' => [[
             'price_data' => [
