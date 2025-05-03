@@ -132,7 +132,8 @@ class RoleUserController extends Controller
         }
 
         $requestdata = $request->except('password');
-        $requestdata['dob']=date('Y-m-d', strtotime($request->dob. ' + 1 days'));
+        // $requestdata['dob']=date('Y-m-d', strtotime($request->dob. ' + 1 days'));
+        $requestdata['dob']= date('Y-m-d', strtotime($request->dob));
 
         $user->update($requestdata);
         if ($request->has('password')) {
