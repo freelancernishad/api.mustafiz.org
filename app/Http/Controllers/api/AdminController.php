@@ -100,4 +100,34 @@ class AdminController extends Controller
     }
 
 
+    public function changePassword(Request $request)
+    {
+        $admin = auth('admin')->user();
+
+        if (!$admin) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        // Check if current password matches
+        if (!Hash::check($request->current_password, $admin->password)) {
+            return response()->json(['current_password' => ['Current password is incorrect']], 400);
+        }
+
+        // Update password
+        $admin->password = Hash::make($request->new_password);
+        $admin->save();
+
+        return response()->json(['message' => 'Password changed successfully'], 200);
+    }
+
+
 }

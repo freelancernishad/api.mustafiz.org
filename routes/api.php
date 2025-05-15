@@ -297,6 +297,9 @@ Route::group(['middleware' => ['auth:admin']], function () {
 
 
 
+
+Route::post('/admin/change-password', [AdminController::class, 'changePassword']);
+
     Route::post('/user/register', [AuthController::class, 'register']);
 
     Route::get('admins', [AdminController::class, 'getAll']);

@@ -74,8 +74,8 @@ class DecisionController extends Controller
 
         $how_long = $request->how_long;
 
-        $start_date = date("Y-m-d", strtotime(!empty($how_long[0]) ? $how_long[0] : null));
-        $end_date = date("Y-m-d", strtotime(!empty($how_long[1]) ? $how_long[1] : null));
+        $start_date = date("m-d-Y", strtotime(!empty($how_long[0]) ? $how_long[0] : null));
+        $end_date = date("m-d-Y", strtotime(!empty($how_long[1]) ? $how_long[1] : null));
 
         $decision = Decision::create([
             'user_id' => $request->user_id,
@@ -166,8 +166,8 @@ class DecisionController extends Controller
 
         if ($request->has('how_long')) {
             $how_long = $request->how_long;
-            $start_date = date("Y-m-d", strtotime(!empty($how_long[0]) ? $how_long[0] : null));
-            $end_date = date("Y-m-d", strtotime(!empty($how_long[1]) ? $how_long[1] : null));
+            $start_date = date("m-d-Y", strtotime(!empty($how_long[0]) ? $how_long[0] : null));
+            $end_date = date("m-d-Y", strtotime(!empty($how_long[1]) ? $how_long[1] : null));
 
             $updates['how_long'] = json_encode($how_long);
             $updates['start_date'] = $start_date;
