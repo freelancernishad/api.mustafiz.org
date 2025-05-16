@@ -5,15 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+use Carbon\Carbon;
+
 class Decision extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'user_id',
         'title',
@@ -28,12 +25,8 @@ class Decision extends Model
         'currency',
         'start_date',
         'end_date',
-
     ];
 
-    /**
-     * Get the user that owns the decision.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -42,5 +35,20 @@ class Decision extends Model
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function getDateAttribute($value)
+    {
+        return Carbon::parse($value)->format('m-d-Y');
+    }
+
+    public function getStartDateAttribute($value)
+    {
+        return Carbon::parse($value)->format('m-d-Y');
+    }
+
+    public function getEndDateAttribute($value)
+    {
+        return Carbon::parse($value)->format('m-d-Y');
     }
 }
