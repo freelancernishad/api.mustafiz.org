@@ -204,4 +204,12 @@ public function permissions()
         return self::where('creator_id', $creatorId)->get();
     }
 
+
+
+    public function documents()
+    {
+        return $this->hasMany(UserDocument::class);
+    }
+
+
 }

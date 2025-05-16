@@ -27,13 +27,14 @@ use App\Http\Controllers\SocialLinkController;
 use App\Http\Controllers\api\StudentController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\AdvertisementController;
+use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\Auth\users\AuthController;
 use App\Http\Controllers\api\OrganizationController;
+use App\Http\Controllers\Api\UserDocumentController;
 use App\Http\Controllers\Auth\admins\AdminAuthController;
 use App\Http\Controllers\Auth\students\StudentAuthController;
 use App\Http\Controllers\Auth\orgs\OrganizationAuthController;
-use App\Http\Controllers\StripePaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -211,6 +212,15 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::delete('advertisements/{slug}', [AdvertisementController::class, 'destroy'])->name('advertisements.destroy')->middleware('checkPermission:advertisements.destroy');
 
 
+
+
+
+    Route::prefix('users')->group(function () {
+    Route::get('/user-documents', [UserDocumentController::class, 'index']);
+    Route::post('/user-documents', [UserDocumentController::class, 'store']);
+    Route::get('/user-documents/{id}', [UserDocumentController::class, 'show']);
+    Route::delete('/user-documents/{id}', [UserDocumentController::class, 'destroy']);
+    });
 
 
 
