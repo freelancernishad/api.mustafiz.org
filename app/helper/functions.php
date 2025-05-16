@@ -1,4 +1,5 @@
 <?php
+use Carbon\Carbon;
 use Stripe\Stripe;
 use App\Models\Donner;
 use Illuminate\Http\Request;
@@ -68,21 +69,18 @@ function routeUsesMiddleware($route, $middlewareName)
 
 
 
- function calculateDuration($startDate, $endDate)
+function calculateDuration($startDate, $endDate)
 {
-    $start = \Carbon\Carbon::parse($startDate);
-    $end = \Carbon\Carbon::parse($endDate);
-
-    $days = $start->diffInDays($end);
-    $months = $start->diffInMonths($end);
-    $years = $start->diffInYears($end);
+    // Tell Carbon the date format you're using
+    $start = Carbon::createFromFormat('m-d-Y', $startDate);
+    $end = Carbon::createFromFormat('m-d-Y', $endDate);
 
     return [
         'start_date' => $startDate,
         'end_date' => $endDate,
-        'days' => $days,
-        'months' => $months,
-        'years' => $years,
+        'days' => $start->diffInDays($end),
+        'months' => $start->diffInMonths($end),
+        'years' => $start->diffInYears($end),
     ];
 }
 
