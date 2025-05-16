@@ -39,16 +39,17 @@ class Decision extends Model
 
     public function getDateAttribute($value)
     {
-        return \Carbon\Carbon::parse($value)->format('m-d-Y');
+        return $value ? date('m-d-Y', strtotime($value)) : null;
     }
 
     public function getStartDateAttribute($value)
     {
-        return \Carbon\Carbon::parse($value)->format('m-d-Y');
+        return $value ? date('m-d-Y', strtotime($value)) : null;
     }
 
     public function getEndDateAttribute($value)
     {
-        return \Carbon\Carbon::parse($value)->format('m-d-Y');
+        return $value ? date('m-d-Y', strtotime($value)) : null;
     }
+
 }
