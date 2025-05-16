@@ -105,7 +105,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function getDobAttribute($value)
     {
-        return \Carbon\Carbon::parse($value)->format('Y-m-d');
+        return \Carbon\Carbon::parse($value)->format('m-d-Y');
     }
 
 
