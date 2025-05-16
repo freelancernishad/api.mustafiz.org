@@ -30,4 +30,8 @@ class Transaction extends Model
     {
         return $this->belongsTo(Decision::class);
     }
+        public function getDatetimeAttribute($value)
+    {
+        return $value ? date('m-d-Y H:i', strtotime($value)) : null;
+    }
 }
