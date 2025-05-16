@@ -347,6 +347,27 @@ Route::post('/admin/change-password', [AdminController::class, 'changePassword']
 
         Route::resource('transactions', TransactionController::class);
 
+
+
+
+
+
+
+
+
+
+
+        Route::get('admin/user-documents/{user_id}', [UserDocumentController::class, 'adminIndex']);
+        Route::post('admin/user-documents', [UserDocumentController::class, 'adminStore']);
+        Route::get('admin/user-documents/show/{id}', [UserDocumentController::class, 'adminShow']);
+        Route::delete('admin/user-documents/{id}', [UserDocumentController::class, 'adminDestroy']);
+
+
+
+
+
+
+
 });
 
 
