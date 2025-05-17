@@ -144,7 +144,7 @@ class RoleUserController extends Controller
             foreach ($request->file('documents') as $file) {
                 $fileName = time() . '_' . $file->getClientOriginalName();
                 $filePath = $file->storeAs('users/documents', $fileName, 'protected');
-                $documentPaths[] = $filePath;
+                $documentPaths[] = url("/files/".$filePath);
             }
         }
 
