@@ -78,6 +78,7 @@ class User extends Authenticatable implements JWTSubject
         'otp',
         'otp_expires_at',
         'creator_id',
+         'documents_urls',
     ];
 
     /**
@@ -100,6 +101,7 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'otp_expires_at' => 'datetime',
+        'documents_urls' => 'array',
     ];
 
 

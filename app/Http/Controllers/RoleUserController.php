@@ -112,6 +112,7 @@ class RoleUserController extends Controller
             'situation' => 'nullable|string',
             'terms_agreement' => 'nullable|string|max:255',
             'total_family_members' => 'nullable|string|max:255',
+             'documents.*' => 'file|mimes:jpg,jpeg,png,pdf,doc,docx',
         ]);
 
         if ($validator->fails()) {
@@ -134,6 +135,24 @@ class RoleUserController extends Controller
         $requestdata = $request->except('password');
         // $requestdata['dob']=date('Y-m-d', strtotime($request->dob. ' + 1 days'));
         $requestdata['dob']= date('Y-m-d', strtotime($request->dob));
+
+
+            // 🔁 Handle uploaded documents
+        $documentPaths = [];
+
+        if ($request->hasFile('documents')) {
+            foreach ($request->file('documents') as $file) {
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('users/documents', $fileName, 'protected');
+                $documentPaths[] = $filePath;
+            }
+        }
+
+        // Save document paths as JSON string in documents_urls column
+        if (!empty($documentPaths)) {
+            $requestdata['documents_urls'] = $documentPaths;
+        }
+
 
         $user->update($requestdata);
         if ($request->has('password')) {
