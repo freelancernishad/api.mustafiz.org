@@ -69,18 +69,60 @@ function routeUsesMiddleware($route, $middlewareName)
 
 
 
+// function calculateDuration($startDate, $endDate)
+// {
+//     // Tell Carbon the date format you're using
+//     $start = Carbon::parse(date('Y-m-d', strtotime($startDate)));
+//     $end = Carbon::parse(date('Y-m-d', strtotime($endDate)));
+
+//     return [
+//         'start_date' => $startDate,
+//         'end_date' => $endDate,
+//         'days' => $start->diffInDays($end),
+//         'months' => $start->diffInMonths($end),
+//         'years' => $start->diffInYears($end),
+//     ];
+// }
+
 function calculateDuration($startDate, $endDate)
 {
-    // Tell Carbon the date format you're using
-    $start = Carbon::createFromFormat('m-d-Y', $startDate);
-    $end = Carbon::createFromFormat('m-d-Y', $endDate);
+    // Convert dates to timestamps
+    $startTimestamp = strtotime($startDate);
+    $endTimestamp = strtotime($endDate);
+
+    // Ensure start is earlier than end
+    if ($startTimestamp > $endTimestamp) {
+        [$startTimestamp, $endTimestamp] = [$endTimestamp, $startTimestamp];
+    }
+
+    // Calculate days
+    $diffInSeconds = $endTimestamp - $startTimestamp;
+    $days = floor($diffInSeconds / (60 * 60 * 24));
+
+    // Extract Y-m-d parts
+    list($startYear, $startMonth, $startDay) = explode('-', date('Y-m-d', $startTimestamp));
+    list($endYear, $endMonth, $endDay) = explode('-', date('Y-m-d', $endTimestamp));
+
+    // Calculate year difference
+    $years = $endYear - $startYear;
+
+    // Adjust if the end date hasn't reached the full year yet
+    if ($endMonth < $startMonth || ($endMonth == $startMonth && $endDay < $startDay)) {
+        $years--;
+    }
+
+    // Calculate months
+    $months = ($endYear - $startYear) * 12 + ($endMonth - $startMonth);
+    if ($endDay < $startDay) {
+        $months--;
+    }
 
     return [
         'start_date' => $startDate,
         'end_date' => $endDate,
-        'days' => $start->diffInDays($end),
-        'months' => $start->diffInMonths($end),
-        'years' => $start->diffInYears($end),
+        'days' => $days,
+        'months' => $months,
+        'years' => $years,
     ];
 }
 
