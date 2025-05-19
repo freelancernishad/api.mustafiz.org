@@ -22,6 +22,7 @@ use App\Http\Controllers\DecisionController;
 use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\api\AdminController;
 use App\Http\Controllers\EmailAuthController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SocialLinkController;
 use App\Http\Controllers\api\StudentController;
@@ -306,6 +307,7 @@ Route::post('admin/reg', [AdminAuthController::class, 'register']);
 Route::group(['middleware' => ['auth:admin']], function () {
 
 
+    Route::get('admin/dashboard-stats', [ReportController::class, 'getDashboardStats']);
 
 
 Route::post('/admin/change-password', [AdminController::class, 'changePassword']);
