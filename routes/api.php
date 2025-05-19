@@ -22,7 +22,7 @@ use App\Http\Controllers\DecisionController;
 use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\api\AdminController;
 use App\Http\Controllers\EmailAuthController;
-use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\api\ReportController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SocialLinkController;
 use App\Http\Controllers\api\StudentController;
